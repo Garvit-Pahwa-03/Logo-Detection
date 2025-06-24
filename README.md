@@ -91,7 +91,7 @@ The easiest way to get started is by using the Google Colab notebook.
     -   Run the cells in the `Logodetection.ipynb` notebook from top to bottom.
     -   The notebook will handle all installations, data splitting, training, and prediction.
 
-The final trained model weights (`best.pt`) and prediction images will be saved in the `/ultralytics/runs/` directory.
+The final trained model weights (`best.pt`) and prediction images will be saved in the `ultralytics/runs/` directory.
 
 ---
 
