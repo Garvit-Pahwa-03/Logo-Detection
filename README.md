@@ -57,7 +57,7 @@ This project follows a standard computer vision workflow, structured for clarity
 -   **High Performance**: The model is trained to be robust and can be deployed for real-time detection tasks on a competition robot.
 
 #### Example Detection:
-*(Here you can add a screenshot of your model's output, e.g., `![Detection Example](link_to_your_image.jpg)`)*
+![Robocon Logo Detection Example](assets/Logo detection example.jpg)
 
 
 ---
