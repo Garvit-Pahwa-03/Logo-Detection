@@ -16,9 +16,17 @@ const ctx = captureCanvas.getContext("2d");
 
 async function startCamera() {
     try {
-        stream = await navigator.mediaDevices.getUserMedia({
-            video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: "user" }
-        });
+        // First check if camera exists
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const cameras = devices.filter(d => d.kind === "videoinput");
+        
+        if (cameras.length === 0) {
+            setStatus("", "No camera found on this device");
+            alert("No camera found. Please connect a webcam and try again.");
+            return;
+        }
+
+        stream = await navigator.mediaDevices.getUserMedia({ video: true });
         webcam.srcObject = stream;
         await new Promise(r => webcam.onloadedmetadata = r);
 
@@ -42,8 +50,16 @@ async function startCamera() {
         }, 1000);
 
     } catch (err) {
-        setStatus("", "Camera error: " + err.message);
-        alert("Could not access webcam: " + err.message);
+        if (err.name === "NotAllowedError") {
+            setStatus("", "Camera permission denied");
+            alert("Camera access was blocked. Click the camera icon in your browser address bar and select Allow, then refresh the page.");
+        } else if (err.name === "NotFoundError") {
+            setStatus("", "No camera found");
+            alert("No camera found. Please connect a webcam and try again.");
+        } else {
+            setStatus("", "Camera error: " + err.message);
+            alert("Camera error: " + err.message);
+        }
     }
 }
 
