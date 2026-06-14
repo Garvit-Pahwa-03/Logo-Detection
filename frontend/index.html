@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Robocon 2025 — Logo Detector</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #1e1e2e;
+      --accent: #f97316;
+      --accent2: #fb923c;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --success: #22c55e;
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      min-height: 100vh;
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;500&display=swap');
+
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface);
+    }
+
+    .logo-text {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .logo-text span { color: var(--accent); }
+
+    .badge {
+      background: var(--accent);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .main {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 1.5rem;
+      padding: 1.5rem 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .video-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .panel-label {
+      font-family: var(--font-display);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.25rem;
+    }
+
+    .video-container {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      aspect-ratio: 16/9;
+    }
+
+    #webcam, #canvas-output {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    #canvas-output {
+      position: absolute;
+      top: 0; left: 0;
+      display: none;
+    }
+
+    .video-overlay {
+      position: absolute;
+      bottom: 1rem;
+      left: 1rem;
+      right: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    #status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--muted);
+      flex-shrink: 0;
+      transition: background 0.3s;
+    }
+
+    #status-dot.active { background: var(--success); box-shadow: 0 0 8px var(--success); }
+    #status-dot.detecting { background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: pulse 1s infinite; }
+
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+    #status-text {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .controls {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    button {
+      font-family: var(--font-body);
+      font-size: 0.875rem;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      border-radius: 8px;
+      padding: 0.6rem 1.25rem;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+    .btn-primary:hover { background: var(--accent2); }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { border-color: var(--accent); }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+
+    .card-title {
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .stat-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem;
+    }
+
+    .stat-value {
+      font-family: var(--font-display);
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 0.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .detection-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .detection-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.6rem 0.75rem;
+      font-size: 0.8rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .conf-bar-wrap {
+      background: var(--border);
+      border-radius: 4px;
+      height: 4px;
+      margin-top: 0.4rem;
+      overflow: hidden;
+    }
+
+    .conf-bar {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 4px;
+      transition: width 0.3s;
+    }
+
+    .empty-state {
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-align: center;
+      padding: 1.5rem;
+    }
+
+    .qr-section {
+      text-align: center;
+    }
+
+    .qr-section img {
+      width: 140px;
+      height: 140px;
+      border-radius: 8px;
+      border: 2px solid var(--border);
+    }
+
+    .qr-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.75rem;
+      line-height: 1.5;
+    }
+
+    #fps-counter {
+      font-family: monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .interval-control {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+    }
+
+    .interval-control label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    input[type="range"] {
+      flex: 1;
+      accent-color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo-text">Robocon <span>2025</span> · Logo Detector</div>
+  <div style="display:flex;align-items:center;gap:1rem;">
+    <span id="fps-counter">-- fps</span>
+    <span class="badge">Live Demo</span>
+  </div>
+</header>
+
+<div class="main">
+  <div class="video-panel">
+    <div>
+      <div class="panel-label">Webcam Feed · Real-time Detection</div>
+      <div class="video-container">
+        <video id="webcam" autoplay muted playsinline></video>
+        <img id="canvas-output" alt="Detection output"/>
+        <div class="video-overlay">
+          <div id="status-dot"></div>
+          <div id="status-text">Click "Start Camera" to begin</div>
+        </div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="btn-primary" id="startBtn" onclick="startCamera()">▶ Start Camera</button>
+      <button class="btn-secondary" id="stopBtn" onclick="stopDetection()" disabled>■ Stop</button>
+    </div>
+    <div class="interval-control">
+      <label>Detection speed:</label>
+      <input type="range" id="intervalSlider" min="100" max="2000" value="300" step="100"
+             oninput="updateInterval(this.value)"/>
+      <label id="intervalLabel">300ms</label>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="card">
+      <div class="card-title">📊 Session Stats</div>
+      <div class="stat-grid">
+        <div class="stat-box">
+          <div class="stat-value" id="total-detections">0</div>
+          <div class="stat-label">Detections</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="avg-conf">—</div>
+          <div class="stat-label">Avg Conf.</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="frames-sent">0</div>
+          <div class="stat-label">Frames</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value" id="latency">—</div>
+          <div class="stat-label">Latency</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🎯 Current Detections</div>
+      <div id="detection-list" class="detection-list">
+        <div class="empty-state">No logos detected yet</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📱 Try on Your Phone</div>
+      <div class="qr-section">
+        <div id="qr-placeholder" style="width:140px;height:140px;background:var(--bg);border:2px solid var(--border);border-radius:8px;margin:0 auto;display:flex;align-items:center;justify-content:center;">
+          <span style="font-size:0.7rem;color:var(--muted);text-align:center;padding:0.5rem;">QR code<br/>appears here</span>
+        </div>
+        <div class="qr-label">
+          Scan to open the mobile logo viewer.<br/>
+          Point your phone at the screen!
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden canvas for frame capture -->
+<canvas id="capture-canvas" style="display:none;"></canvas>
+
+<script>
+  // ⚠️ REPLACE THIS with your deployed Render backend URL
+  const BACKEND_URL = "https://YOUR-APP-NAME.onrender.com";
+
+  let stream = null;
+  let detectionInterval = null;
+  let intervalMs = 300;
+  let totalDetections = 0;
+  let framesSent = 0;
+  let confHistory = [];
+  let lastFrameTime = 0;
+  let fpsInterval = null;
+
+  const webcam = document.getElementById("webcam");
+  const output = document.getElementById("canvas-output");
+  const captureCanvas = document.getElementById("capture-canvas");
+  const ctx = captureCanvas.getContext("2d");
+
+  async function startCamera() {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: "user" }
+      });
+      webcam.srcObject = stream;
+      await new Promise(r => webcam.onloadedmetadata = r);
+
+      captureCanvas.width = webcam.videoWidth;
+      captureCanvas.height = webcam.videoHeight;
+
+      setStatus("active", "Camera active · starting detection...");
+      document.getElementById("startBtn").disabled = true;
+      document.getElementById("stopBtn").disabled = false;
+
+      // Generate QR
+      generateQR();
+
+      // Start inference loop
+      detectionInterval = setInterval(sendFrame, intervalMs);
+
+      // FPS counter
+      fpsInterval = setInterval(() => {
+        const now = Date.now();
+        if (lastFrameTime) {
+          const fps = Math.round(1000 / (now - lastFrameTime));
+          document.getElementById("fps-counter").textContent = `~${fps} fps`;
+        }
+      }, 1000);
+
+    } catch (err) {
+      setStatus("", "Camera error: " + err.message);
+      alert("Could not access webcam: " + err.message);
+    }
+  }
+
+  async function sendFrame() {
+    if (!stream) return;
+    ctx.drawImage(webcam, 0, 0);
+
+    captureCanvas.toBlob(async (blob) => {
+      if (!blob) return;
+      const start = Date.now();
+      lastFrameTime = start;
+      framesSent++;
+      document.getElementById("frames-sent").textContent = framesSent;
+      setStatus("detecting", "Analyzing frame...");
+
+      try {
+        const formData = new FormData();
+        formData.append("file", blob, "frame.jpg");
+
+        const resp = await fetch(`${BACKEND_URL}/detect`, {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await resp.json();
+        const latency = Date.now() - start;
+
+        // Show annotated image
+        output.src = data.annotated_image;
+        output.style.display = "block";
+        webcam.style.display = "none";
+
+        // Update stats
+        totalDetections += data.count;
+        document.getElementById("total-detections").textContent = totalDetections;
+        document.getElementById("latency").textContent = latency + "ms";
+
+        // Update detection list
+        updateDetectionList(data.detections);
+
+        // Confidence tracking
+        if (data.detections.length > 0) {
+          const confs = data.detections.map(d => d.confidence);
+          confHistory.push(...confs);
+          if (confHistory.length > 50) confHistory.shift();
+          const avg = (confHistory.reduce((a,b) => a+b, 0) / confHistory.length * 100).toFixed(0);
+          document.getElementById("avg-conf").textContent = avg + "%";
+        }
+
+        setStatus("active", `Detected ${data.count} logo(s) · ${latency}ms`);
+      } catch (e) {
+        setStatus("", "Backend error — is the server running?");
+        console.error(e);
+      }
+    }, "image/jpeg", 0.8);
+  }
+
+  function updateDetectionList(detections) {
+    const list = document.getElementById("detection-list");
+    if (detections.length === 0) {
+      list.innerHTML = '<div class="empty-state">No logos in frame</div>';
+      return;
+    }
+    list.innerHTML = detections.map((d, i) => `
+      <div class="detection-item">
+        <div>
+          <div style="font-weight:500;color:var(--text)">${d.class}</div>
+          <div class="conf-bar-wrap"><div class="conf-bar" style="width:${d.confidence*100}%"></div></div>
+        </div>
+        <div style="color:var(--accent);font-weight:600;font-family:monospace">${(d.confidence*100).toFixed(1)}%</div>
+      </div>
+    `).join("");
+  }
+
+  function stopDetection() {
+    clearInterval(detectionInterval);
+    clearInterval(fpsInterval);
+    if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+    webcam.srcObject = null;
+    output.style.display = "none";
+    webcam.style.display = "block";
+    document.getElementById("startBtn").disabled = false;
+    document.getElementById("stopBtn").disabled = true;
+    document.getElementById("fps-counter").textContent = "-- fps";
+    setStatus("", "Stopped");
+  }
+
+  function updateInterval(val) {
+    intervalMs = parseInt(val);
+    document.getElementById("intervalLabel").textContent = val + "ms";
+    if (detectionInterval) {
+      clearInterval(detectionInterval);
+      detectionInterval = setInterval(sendFrame, intervalMs);
+    }
+  }
+
+  function setStatus(type, msg) {
+    const dot = document.getElementById("status-dot");
+    dot.className = type;
+    document.getElementById("status-text").textContent = msg;
+  }
+
+  function generateQR() {
+    // Uses free QR API — replace mobile.html URL with your GitHub Pages URL
+    const mobileUrl = encodeURIComponent(window.location.origin + "/mobile.html");
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${mobileUrl}&bgcolor=13131a&color=f97316&margin=10`;
+    const placeholder = document.getElementById("qr-placeholder");
+    placeholder.outerHTML = `<img src="${qrUrl}" alt="QR Code for mobile viewer" />`;
+  }
+</script>
+</body>
+</html>
