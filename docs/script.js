@@ -1,4 +1,4 @@
-const BACKEND_URL = "https://logo-detection-855c.onrender.com";
+const BACKEND_URL = "https://Garvit03-robocon-logo-detector.hf.space";
 
 let stream = null;
 let detectionInterval = null;
