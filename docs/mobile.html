@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>Robocon 2025 — Logo Cards</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #13131a;
+      --border: #1e1e2e;
+      --accent: #f97316;
+      --text: #e2e8f0;
+      --muted: #64748b;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    body { background:var(--bg); color:var(--text); font-family:'Inter',system-ui,sans-serif; padding-bottom:2rem; }
+
+    .hero {
+      background: linear-gradient(135deg, #1a0a00, #0a0a0f);
+      border-bottom: 1px solid var(--border);
+      padding: 2rem 1.25rem 1.5rem;
+      text-align: center;
+    }
+    .hero-tag {
+      display: inline-block;
+      background: var(--accent);
+      color: white;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      margin-bottom: 0.75rem;
+    }
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 0.5rem;
+    }
+    h1 span { color: var(--accent); }
+    .subtitle {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .instructions {
+      margin: 1.25rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+    }
+    .instructions p {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+    .instructions strong { color: var(--accent); }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+    .step {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+    .step-num {
+      background: var(--accent);
+      color: white;
+      font-size: 0.65rem;
+      font-weight: 700;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+    .step p { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+
+    .logo-grid {
+      padding: 0 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 1.25rem 1.25rem 0;
+    }
+
+    .logo-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .logo-card:active { border-color: var(--accent); }
+
+    .logo-card img {
+      width: 100%;
+      display: block;
+      background: white;
+    }
+
+    .logo-card-footer {
+      padding: 0.75rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo-name {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .logo-hint {
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    .tip-box {
+      margin: 1.25rem;
+      background: rgba(249,115,22,0.08);
+      border: 1px solid rgba(249,115,22,0.3);
+      border-radius: 10px;
+      padding: 1rem;
+      font-size: 0.8rem;
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .tip-box strong { color: var(--accent); }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-tag">Mobile Viewer</div>
+  <h1>Robocon <span>2025</span><br/>Logo Cards</h1>
+  <p class="subtitle">Show these logos to the laptop webcam<br/>to trigger live detection</p>
+</div>
+
+<div class="instructions">
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><p>Open the logo card below in <strong>full screen</strong></p></div>
+    <div class="step"><div class="step-num">2</div><p>Hold your phone in front of the <strong>laptop's webcam</strong></p></div>
+    <div class="step"><div class="step-num">3</div><p>Watch the <strong>bounding box</strong> appear on the laptop screen!</p></div>
+  </div>
+</div>
+
+<div class="section-label">5 Detection Test Cards</div>
+
+<div class="section-label">Detection Test Card</div>
+
+<div class="logo-grid">
+  <div class="logo-card">
+    <img src="logos/logo_1.jpg" alt="Robocon 2025 Logo" loading="lazy"/>
+    <div class="logo-card-footer">
+      <div>
+        <div class="logo-name">Robocon 2025 Logo</div>
+        <div class="logo-hint">Hold this up to the laptop webcam</div>
+      </div>
+      <span style="font-size:1.25rem">🎯</span>
+    </div>
+  </div>
+</div>
+
+<div class="tip-box">
+  <strong>💡 Pro tip:</strong> For best detection, hold your phone <strong>30–50 cm</strong> from the webcam, keep it steady for 1–2 seconds, and make sure the logo fills at least 30% of your phone screen. Try different angles!
+</div>
+
+</body>
+</html>
