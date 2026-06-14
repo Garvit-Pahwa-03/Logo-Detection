@@ -29,9 +29,6 @@ async function startCamera() {
         document.getElementById("startBtn").disabled = true;
         document.getElementById("stopBtn").disabled = false;
 
-        // Generate QR
-        generateQR();
-
         // Start inference loop
         detectionInterval = setInterval(sendFrame, intervalMs);
 
@@ -74,20 +71,16 @@ async function sendFrame() {
             const data = await resp.json();
             const latency = Date.now() - start;
 
-            // Show annotated image
             output.src = data.annotated_image;
             output.style.display = "block";
             webcam.style.display = "none";
 
-            // Update stats
             totalDetections += data.count;
             document.getElementById("total-detections").textContent = totalDetections;
             document.getElementById("latency").textContent = latency + "ms";
 
-            // Update detection list
             updateDetectionList(data.detections);
 
-            // Confidence tracking
             if (data.detections.length > 0) {
                 const confs = data.detections.map(d => d.confidence);
                 confHistory.push(...confs);
@@ -150,9 +143,11 @@ function setStatus(type, msg) {
 }
 
 function generateQR() {
-    // Uses free QR API — replace mobile.html URL with your GitHub Pages URL
-    const mobileUrl = encodeURIComponent(window.location.origin + "/mobile.html");
+    const mobileUrl = encodeURIComponent("https://garvit-pahwa-03.github.io/Logo-Detection/mobile.html");
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${mobileUrl}&bgcolor=13131a&color=f97316&margin=10`;
     const placeholder = document.getElementById("qr-placeholder");
     placeholder.outerHTML = `<img src="${qrUrl}" alt="QR Code for mobile viewer" />`;
 }
+
+// Generate QR on page load
+window.addEventListener("load", generateQR);
