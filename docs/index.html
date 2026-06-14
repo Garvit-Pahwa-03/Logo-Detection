@@ -94,18 +94,6 @@
   Test Camera
 </button>
 
-<script>
-async function testCamera() {
-  console.log("Testing camera...");
-  try {
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    console.log("All devices:", devices);
-    alert("Devices found: " + JSON.stringify(devices.map(d => d.kind + ": " + d.label)));
-  } catch(e) {
-    alert("Error: " + e.message);
-  }
-}
-</script>
 
 </body>
 </html>
