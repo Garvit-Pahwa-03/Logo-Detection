@@ -89,5 +89,23 @@
 <!-- Hidden canvas for frame capture -->
 <canvas id="capture-canvas" style="display:none;"></canvas>
 <script src="script.js"></script>
+
+<button onclick="testCamera()" style="position:fixed;bottom:20px;right:20px;z-index:9999;background:red;color:white;padding:10px;border:none;border-radius:8px;cursor:pointer;">
+  Test Camera
+</button>
+
+<script>
+async function testCamera() {
+  console.log("Testing camera...");
+  try {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    console.log("All devices:", devices);
+    alert("Devices found: " + JSON.stringify(devices.map(d => d.kind + ": " + d.label)));
+  } catch(e) {
+    alert("Error: " + e.message);
+  }
+}
+</script>
+
 </body>
 </html>
